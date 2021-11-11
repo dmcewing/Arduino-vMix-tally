@@ -2,14 +2,14 @@
 /*
   vMix wireless tally
   Copyright 2021 Thomas Mout
+
+  https://randomnerdtutorials.com/interrupts-timers-esp8266-arduino-ide-nodemcu/  use millis() to calculate blink frequency.
 */
 
 #include <EEPROM.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WiFiClient.h>
-#include <Adafruit_GFX.h>
-#include <WEMOS_Matrix_GFX.h>
 #include "FS.h"
 
 // Constants
@@ -17,6 +17,10 @@ const int SsidMaxLength = 64;
 const int PassMaxLength = 64;
 const int HostNameMaxLength = 64;
 const int TallyNumberMaxValue = 64;
+
+const int PREVIEW_LED = 14; //D5
+const int PROGRAM_LED = 12; //D6
+const int STANDBY_LED = 13; //D7
 
 // Settings object
 struct Settings
@@ -47,21 +51,11 @@ char apPass[64];
 // vMix settings
 int port = 8099;
 
-// LED settings
-MLED matrix(4);
-
 // Tally info
 char currentState = -1;
 const char tallyStateOff = 0;
 const char tallyStateProgram = 1;
 const char tallyStatePreview = 2;
-
-// LED characters
-static const uint8_t PROGMEM C[] = {B00000000, B01111110, B11111111, B10000001, B10000001, B11000011, B01000010, B00000000};
-static const uint8_t PROGMEM L[] = {B00000000, B11111111, B11111111, B11000000, B11000000, B11000000, B11000000, B00000000};
-static const uint8_t PROGMEM P[] = {B00000000, B11111111, B11111111, B00010001, B00010001, B00011111, B00001110, B00000000};
-static const uint8_t PROGMEM S[] = {B00000000, B01001100, B11011110, B10010010, B10010010, B11110110, B01100100, B00000000};
-static const uint8_t PROGMEM CORNER_DOTS[] = {B10000001, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B10000001};
 
 // The WiFi client
 WiFiClient client;
@@ -170,79 +164,57 @@ void printSettings()
   Serial.println(settings.tallyNumber);
 }
 
-// Set led intensity from 0 to 7
-void ledSetIntensity(int intensity)
-{
-  matrix.intensity = intensity;
-}
-
 // Set LED's off
 void ledSetOff()
 {
-  matrix.clear();
-  matrix.writeDisplay();
-}
-
-// Draw corner dots
-void ledSetCornerDots()
-{
-  matrix.clear();
-  matrix.drawBitmap(0, 0, CORNER_DOTS, 8, 8, LED_ON);
-  ledSetIntensity(2);
-  matrix.writeDisplay();
+  digitalWrite(PREVIEW_LED, LOW);
+  digitalWrite(PROGRAM_LED, LOW);
+  digitalWrite(STANDBY_LED, HIGH);
 }
 
 // Draw L(ive) with LED's
 void ledSetProgram()
 {
-  matrix.clear();
-  matrix.drawBitmap(0, 0, L, 8, 8, LED_ON);
-  ledSetIntensity(7);
-  matrix.writeDisplay();
+  digitalWrite(PREVIEW_LED, LOW);
+  digitalWrite(PROGRAM_LED, HIGH);
+  digitalWrite(STANDBY_LED, LOW);
 }
 
 // Draw P(review) with LED's
 void ledSetPreview()
 {
-  matrix.clear();
-  matrix.drawBitmap(0, 0, P, 8, 8, LED_ON);
-  ledSetIntensity(2);
-  matrix.writeDisplay();
+  digitalWrite(PREVIEW_LED, HIGH);
+  digitalWrite(PROGRAM_LED, LOW);
+  digitalWrite(STANDBY_LED, LOW);
 }
 
 // Draw C(onnecting) with LED's
 void ledSetConnecting()
 {
-  matrix.clear();
-  matrix.drawBitmap(0, 0, C, 8, 8, LED_ON);
-  ledSetIntensity(7);
-  matrix.writeDisplay();
+  digitalWrite(PREVIEW_LED, LOW);
+  digitalWrite(PROGRAM_LED, HIGH);
+  digitalWrite(STANDBY_LED, HIGH);
 }
 
 // Draw S(ettings) with LED's
 void ledSetSettings()
 {
-  matrix.clear();
-  matrix.drawBitmap(0, 0, S, 8, 8, LED_ON);
-  ledSetIntensity(7);
-  matrix.writeDisplay();
+  digitalWrite(PREVIEW_LED, HIGH);
+  digitalWrite(PROGRAM_LED, LOW);
+  digitalWrite(STANDBY_LED, HIGH);
 }
 
 // Set tally to off
 void tallySetOff()
 {
   Serial.println("Tally off");
-
   ledSetOff();
-  ledSetCornerDots();
 }
 
 // Set tally to program
 void tallySetProgram()
 {
   Serial.println("Tally program");
-
-  ledSetOff();
   ledSetProgram();
 }
 
@@ -250,15 +222,12 @@ void tallySetProgram()
 void tallySetPreview()
 {
   Serial.println("Tally preview");
-
-  ledSetOff();
   ledSetPreview();
 }
 
 // Set tally to connecting
 void tallySetConnecting()
 {
-  ledSetOff();
   ledSetConnecting();
 }
 
@@ -577,6 +546,10 @@ void setup()
   Serial.begin(9600);
   EEPROM.begin(512);
   SPIFFS.begin();
+  
+  pinMode(PREVIEW_LED, OUTPUT);
+  pinMode(PROGRAM_LED, OUTPUT);
+  pinMode(STANDBY_LED, OUTPUT);
 
   httpServer.on("/", HTTP_GET, rootPageHandler);
   httpServer.on("/save", HTTP_POST, handleSave);
