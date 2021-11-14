@@ -18,8 +18,9 @@ const int PassMaxLength = 64;
 const int HostNameMaxLength = 64;
 const int TallyNumberMaxValue = 64;
 
-const int PREVIEW_LED = 14; //D5
-const int PROGRAM_LED = 12; //D6
+const int PROGRAM_LED2 = 4; //D2
+const int PROGRAM_LED = 14; //D5
+const int PREVIEW_LED = 12; //D6
 const int STANDBY_LED = 13; //D7
 
 // Settings object
@@ -170,6 +171,7 @@ void ledSetOff()
   digitalWrite(PREVIEW_LED, LOW);
   digitalWrite(PROGRAM_LED, LOW);
   digitalWrite(STANDBY_LED, HIGH);
+  digitalWrite(PROGRAM_LED2, LOW);  
 }
 
 // Draw L(ive) with LED's
@@ -178,6 +180,7 @@ void ledSetProgram()
   digitalWrite(PREVIEW_LED, LOW);
   digitalWrite(PROGRAM_LED, HIGH);
   digitalWrite(STANDBY_LED, LOW);
+  digitalWrite(PROGRAM_LED2, HIGH);  
 }
 
 // Draw P(review) with LED's
@@ -186,22 +189,25 @@ void ledSetPreview()
   digitalWrite(PREVIEW_LED, HIGH);
   digitalWrite(PROGRAM_LED, LOW);
   digitalWrite(STANDBY_LED, LOW);
+  digitalWrite(PROGRAM_LED2, LOW);  
 }
 
 // Draw C(onnecting) with LED's
 void ledSetConnecting()
 {
-  digitalWrite(PREVIEW_LED, LOW);
-  digitalWrite(PROGRAM_LED, HIGH);
+  digitalWrite(PREVIEW_LED, HIGH);
+  digitalWrite(PROGRAM_LED, LOW);
   digitalWrite(STANDBY_LED, HIGH);
+  digitalWrite(PROGRAM_LED2, LOW);  
 }
 
 // Draw S(ettings) with LED's
 void ledSetSettings()
 {
-  digitalWrite(PREVIEW_LED, HIGH);
-  digitalWrite(PROGRAM_LED, LOW);
+  digitalWrite(PREVIEW_LED, LOW);
+  digitalWrite(PROGRAM_LED, HIGH);
   digitalWrite(STANDBY_LED, HIGH);
+  digitalWrite(PROGRAM_LED2, LOW);  
 }
 
 // Set tally to off
@@ -496,7 +502,7 @@ void connectTovMix()
   {
     Serial.println(" Connected!");
     Serial.println("------------");
-    
+
     tallySetOff();
 
     // Subscribe to the tally events
@@ -528,7 +534,7 @@ void restart()
 void start()
 {
   tallySetConnecting();
-  
+
   loadSettings();
   sprintf(deviceName, "vMix_Tally_%d", settings.tallyNumber);
   sprintf(apPass, "%s%s", deviceName, "_access");
@@ -546,9 +552,10 @@ void setup()
   Serial.begin(9600);
   EEPROM.begin(512);
   SPIFFS.begin();
-  
+
   pinMode(PREVIEW_LED, OUTPUT);
   pinMode(PROGRAM_LED, OUTPUT);
+  pinMode(PROGRAM_LED2, OUTPUT);
   pinMode(STANDBY_LED, OUTPUT);
 
   httpServer.on("/", HTTP_GET, rootPageHandler);

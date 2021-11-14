@@ -1,75 +1,65 @@
 # Arduino vMix tally
 
-This project contains the firmware for a tally system based on an Arduino esp8266 and the vMix TCP API. 
-Pictures of the tally can be found in the Pictures folder.  
+This project contains the firmware for a tally system based on an Arduino esp8266 and the vMix TCP API.  It is a fork of ****** project but adjusted to use singular LEDs instead of a LED Matrix, as I had LEDs available and they are cheaper.
 
 ## Installation
 
 ### Hardware
 
-For this project two pieces of hardware are needed.  
-The first is a [WeMos® D1 Mini V2](https://www.banggood.com/WeMos-D1-Mini-V2-NodeMcu-4M-Bytes-Lua-WIFI-Internet-Of-Things-Development-Board-Based-ESP8266-p-1115398.html) and the second is a [Wemos® Matrix LED Shield V1.0.0](https://www.banggood.com/Wemos-Matrix-LED-Shield-V1_0_0-For-WEMOS-D1-Mini-p-1196300.html).  
-Additionally a 3D printed case can be used to protect the hardware. A design for this can be found in the Case folder of this repository.  
+This modified project requires a little more hardware than the original.  The core part is a ESP8266 arduino board and the remainder are a bunch of LEDs for the indicators.  
 
-#### Solder instructions
+The full list of parts I have used are:
+* [DuinoTech ESP8266 Main Board](https://www.jaycar.co.nz/wifi-mini-esp8266-main-board/p/XC3802)
+* 5mm LEDs (two red, one yellow, one green), I had these in my spares box from a  [100 Assorted LED pack](https://www.jaycar.co.nz/assorted-led-pack-pack-of-100/p/ZD1694)
+* Pull down resistors 50 Ohm and 1k Ohm, or to suit LED
+* [One Box](https://www.jaycar.co.nz/bulkhead-black-65-x-38-x-27mm/p/HB6065)
+* [Short USB extension](https://www.jaycar.co.nz/micro-usb-extension-cable-100mm-pair/p/WC7756)
 
-* Make sure you use the connector that comes with the WEMOS. <img src="/Pictures/Connectors.jpg" alt="Connectors" width="50">
-* Solder the short site on the WEMOS.  
-* Position the LED Display on the connector you just soldered on the WEMOS with just over 1 – 1,5-millimeter space between the boards. <img src="/Pictures/SolderExample.jpg" alt="Solder example" width="50">
-* Depending on the USB cable you use you may need to widen up the hole for the connector in the case with a file.  
-* Click the assembly in the case.  
 
-### Software
+### Assembly
 
-#### 1. Install Arduino IDE
+Each LED is connected to a port on the ESP8266 board, and to the Ground rail.  To simplify the circuit diagram I have just listed the ports used on the ESP8266 board.
+
+Pin | Port   | Purpose      |  LED connected
+----|--------|--------------|----------------
+D2  | GPIO5  | Live (Front) | Red LED
+D5  | GPIO12 | Live (Rear)  | Red LED
+D6  | GPIO14 | Preview      | Amber/Yellow LED
+D7  | GPIO13 | Standby      | Green LED
+G   |        | Ground       |
+
+I just wired the LEDs directly from their mounting to the board, through the headers that were supplied with the main board.
+
+To connect the TALLY easily I used the short USB extension cable to surface the USB Micro B connector outside of the box.
+
+## Software
+
+### 1. Install Arduino IDE
 
 Download the Arduino IDE from the [Arduino website](https://www.arduino.cc/en/main/software) and install it.  
 After the installation is complete go to File > Preferences and add http://arduino.esp8266.com/stable/package_esp8266com_index.json to the additional Board Manager URL. Go to Tools > Board > Board Manager, search for *esp8266* and install the latest version. After the installation go to Tools > Board and select *Wemos D1 R2* as your default board.  
 
-#### 2. Copy libraries
-
-All libraries included in the Libaries folder are required for this project. Please copy them to your own Arduino libraries folder (default path: *user/documents/Arduino/libraries*).  
-
-#### 3. Uploading static files
+### 2. Uploading static files
 
 Connect the Arduino to the computer with a USB cable.  
 The static files in the Arduino-vMix-Tally/data folder must be uploaded using the Tools > ESP8266 Sketch Data Upload in the Arduino IDE.  
 
-#### 4. Uploading firmware
+### 3. Uploading firmware
 
 Upload the Arduino-vMix-Tally/Arduino-vMix-Tally.ino from this repository to the Arduino by pressing the Upload button. After the upload the tally will restart in Connecting mode (see the Muliple states section).  
 
 ## Getting Started
 
-### Multiple states
+### States
+Unlike the original that shows a letter on the matrix, this project uses independant LEDs and the combination of illumination indicates the state
 
-There are three states in which a tally can find itself.  
-
-#### 1. Connecting
-
-| Symbol | Meaning      | Led intensity | Example                                               |
-|--------|--------------|---------------|-------------------------------------------------------|
-| C      | Connecting   | 100%          |<img src="/Pictures/Connecting.jpg" alt="C" width="50">|
-
-In this state the tally is trying to connect to WiFi and vMix based on the settings.  
-
-#### 2. Access point
-
-| Symbol | Meaning      | Led intensity | Example                                               |
-|--------|--------------|---------------|-------------------------------------------------------|
-| S      | Settings     | 100%          |<img src="/Pictures/AP%20mode.jpg" alt="S" width="50"> |
-
-In this state the tally was unable to connect to WiFi and it turned itself to access point mode. It can be accessed by connecting to the WiFi network with the SSID *vMix_Tally_#* (# is the tally number) and password *vMix_Tally_#_access* (# is the tally number). Once connected the settings can be changed by going to the webpage on IP address 192.168.4.1.  
-
-#### 3. Tally
-
-| Symbol | Meaning      | Led intensity | Example                                                    |
-|--------|--------------|---------------|------------------------------------------------------------|
-| P      | Preview      | 28.5%         |<img src="/Pictures/Tally%20preview.jpg" alt="P" width="50">|
-| L      | Live/program | 100%          |<img src="/Pictures/Tally%20live.jpg" alt="L" width="50">   |
-| .      | Off          | 28.5%         |<img src="/Pictures/Tally%20off.jpg" alt="Off" width="50">  |
-
-In this state the tally is connected to WiFi and vMix. It detects new tally states and shows them using the led matrix.  
+State   | Live (Front) | Live (Back) | Preview | Standby | Notes
+--------|--------------|-------------|---------|---------|----------
+Live    |     On       |     On      |  Off    |   Off   |
+Preview |     Off      |     Off     |  On     |   Off   |
+Standby |     Off      |     Off     |  Off    |   On    |
+Connnecting |  Off     |     Off     |  On     |   On    | The Tally is looking for the vMix instance.
+Setup   |    Off       |     On      |  Off    |   On    | The Tally cannot find the WiFi and has configured itself as a default access point for configuration.
 
 ### Settings
 
@@ -81,7 +71,6 @@ On this webpage the WiFi SSID, WiFi password, vMix hostname and tally number can
 1. Make sure to use a power cable that does not support data when using a USB port on a camera. This can cause connecting issues in the camera.  
 2. The Arduino is completely dependent on a good WiFi signal.  
 3. The tally must be connected to the same network as the vMix instance.  
-4. The LED matrix can only display in red. The difference in color in the pictures above is due to a difference in LED intensity. 
 
 ## Footnote
 
