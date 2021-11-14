@@ -1,6 +1,6 @@
 # Arduino vMix tally
 
-This project contains the firmware for a tally system based on an Arduino esp8266 and the vMix TCP API.  It is a fork of ****** project but adjusted to use singular LEDs instead of a LED Matrix, as I had LEDs available and they are cheaper.
+This project contains the firmware for a tally system based on an Arduino esp8266 and the vMix TCP API.  It is a fork of [Thomas Mout's Arduino-vMix-tally](https://github.com/ThomasMout/Arduino-vMix-tally) project but adjusted to use singular LEDs instead of a LED Matrix, as I had LEDs available and they are cheaper.
 
 ## Installation
 
