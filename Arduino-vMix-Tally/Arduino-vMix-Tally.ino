@@ -3,7 +3,6 @@
   vMix wireless tally
   Copyright 2021 Thomas Mout
 
-  https://randomnerdtutorials.com/interrupts-timers-esp8266-arduino-ide-nodemcu/  use millis() to calculate blink frequency.
 */
 
 #include <EEPROM.h>
@@ -158,7 +157,9 @@ void printSettings()
   Serial.print("SSID: ");
   Serial.println(settings.ssid);
   Serial.print("SSID Password: ");
-  Serial.println(settings.pass);
+  Serial.print(settings.pass[0]);
+  Serial.print(settings.pass[1]);
+  Serial.println("********");
   Serial.print("vMix hostname: ");
   Serial.println(settings.hostName);
   Serial.print("Tally number: ");
@@ -187,7 +188,8 @@ void ledSetProgram()
 void ledSetPreview()
 {
   digitalWrite(PREVIEW_LED, HIGH);
-  digitalWrite(PROGRAM_LED, LOW);
+  digitalWrite(PROGRAM_LED, LOW);Serial.print(settings.pass[0]);
+  Serial.print(settings.pass[1]);
   digitalWrite(STANDBY_LED, LOW);
   digitalWrite(PROGRAM_LED2, LOW);  
 }
@@ -326,7 +328,8 @@ void rootPageHandler()
   response_message += "<div class='form-group row'>";
   response_message += "<label for='ssidpass' class='col-sm-4 col-form-label'>SSID password</label>";
   response_message += "<div class='col-sm-8'>";
-  response_message += "<input id='ssidpass' class='form-control' type='text' size='64' maxlength='64' name='ssidpass' value='" + String(settings.pass) + "'>";
+  //response_message += "<input id='ssidpass' class='form-control' type='text' size='64' maxlength='64' name='ssidpass' value='" + String(settings.pass) + "'>";
+  response_message += "<input id='ssidpass' class='form-control' type='password' size='64' maxlength='64' name='ssidpass' value=''>";
   response_message += "</div></div>";
 
   response_message += "<div class='form-group row'>";
@@ -404,7 +407,8 @@ void handleSave()
 
   if (httpServer.hasArg("ssidpass"))
   {
-    if (httpServer.arg("ssidpass").length() <= PassMaxLength)
+    if (httpServer.arg("ssidpass").length() <= PassMaxLength
+        && httpServer.arg("ssidpass").length() > 0)
     {
       httpServer.arg("ssidpass").toCharArray(settings.pass, PassMaxLength);
       doRestart = true;
@@ -443,8 +447,8 @@ void connectToWifi()
   Serial.println("Connecting to WiFi");
   Serial.print("SSID: ");
   Serial.println(settings.ssid);
-  Serial.print("Passphrase: ");
-  Serial.println(settings.pass);
+  //Serial.print("SSID Password: ");
+  //Serial.println(settings.pass);
 
   int timeout = 15;
 
