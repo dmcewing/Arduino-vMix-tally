@@ -317,7 +317,7 @@ void rootPageHandler()
 
   response_message += "<div class='col-md-6'>";
   response_message += "<h2>Settings</h2>";
-  response_message += "<form action='/save' method='post' enctype='multipart/form-data' data-ajax='false'>";
+  response_message += "<form action='/save' method='post' enctype='multipart/form-data' data-ajax='false' class='border'>";
 
   response_message += "<div class='form-group row'>";
   response_message += "<label for='ssid' class='col-sm-4 col-form-label'>SSID</label>";
@@ -330,6 +330,7 @@ void rootPageHandler()
   response_message += "<div class='col-sm-8'>";
   //response_message += "<input id='ssidpass' class='form-control' type='text' size='64' maxlength='64' name='ssidpass' value='" + String(settings.pass) + "'>";
   response_message += "<input id='ssidpass' class='form-control' type='password' size='64' maxlength='64' name='ssidpass' value=''>";
+  response_message += "<label>(leave blank to leave unchanged.)</label>";
   response_message += "</div></div>";
 
   response_message += "<div class='form-group row'>";
@@ -348,7 +349,7 @@ void rootPageHandler()
   response_message += "</div>";
 
   response_message += "<div class='col-md-6'>";
-  response_message += "<h2>Device information</h2>";
+  response_message += "<h2>Device information</h2><div class='border'>";
   response_message += "<table class='table'><tbody>";
 
   char ip[13];
@@ -378,6 +379,7 @@ void rootPageHandler()
     response_message += "<tr><th>AP</th><td>Inactive</td></tr>";
   }
   response_message += "</tbody></table>";
+  response_message += "</div>";
   response_message += "</div>";
   response_message += "</div>";
 
