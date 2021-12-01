@@ -569,7 +569,33 @@ void setup()
   httpServer.serveStatic("/", SPIFFS, "/", "max-age=315360000");
   httpServer.begin();
 
+  flashLeds();
   start();
+}
+
+void flashLeds()
+{ 
+  digitalWrite(STANDBY_LED, HIGH);
+
+  for (int8_t i = 0; i < 2; i++)
+  {
+    delay(250);
+    cycleLed(STANDBY_LED,PREVIEW_LED);
+    delay(250);
+    cycleLed(PREVIEW_LED,PROGRAM_LED);
+    delay(250);
+    cycleLed(PROGRAM_LED,PROGRAM_LED2);
+    delay(250);
+    cycleLed(PROGRAM_LED2,STANDBY_LED);
+  }
+  delay(250);
+  ledSetOff();
+}
+
+void cycleLed(int LED1, int LED2)
+{
+  digitalWrite(LED1, LOW);
+  digitalWrite(LED2, HIGH);
 }
 
 void loop()
