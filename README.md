@@ -59,12 +59,15 @@ Live    |     On       |     On      |  Off    |   Off   |
 Preview |     Off      |     Off     |  On     |   Off   |
 Standby |     Off      |     Off     |  Off    |   On    |
 Connnecting |  Off     |     Off     |  On     |   On    | The Tally is looking for the vMix instance.
-Setup   |    Off       |     On      |  Off    |   On    | The Tally cannot find the WiFi and has configured itself as a default access point for configuration.
+Setup   |    Off       |     On      |  Off    |   On    | The Tally cannot find the WiFi and has configured itself as a default access point for configuration. See below.
 
 ### Settings
 
 Network and tally settings can be edited on the built-in webpage. To access the webpage connect to the same WiFi network and navigate to the IP address or the devicename(*vmix_tally_#.home*, # is the tally number) in a browser.  
 On this webpage the WiFi SSID, WiFi password, vMix hostname and tally number can be changed. It also shows some basic information of the device.  
+
+### Setup Mode
+In this state the tally was unable to connect to WiFi and it turned itself to access point mode. It can be accessed by connecting to the WiFi network with the SSID vMix_Tally_# (# is the tally number) and password vMix_Tally_#_access (# is the tally number). Once connected the settings can be changed by going to the webpage on IP address 192.168.4.1.
 
 ## Things to keep in mind
 
