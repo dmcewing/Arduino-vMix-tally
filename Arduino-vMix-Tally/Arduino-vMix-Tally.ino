@@ -188,8 +188,7 @@ void ledSetProgram()
 void ledSetPreview()
 {
   digitalWrite(PREVIEW_LED, HIGH);
-  digitalWrite(PROGRAM_LED, LOW);Serial.print(settings.pass[0]);
-  Serial.print(settings.pass[1]);
+  digitalWrite(PROGRAM_LED, LOW);
   digitalWrite(STANDBY_LED, LOW);
   digitalWrite(PROGRAM_LED2, LOW);  
 }
